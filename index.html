@@ -103,6 +103,16 @@
     <div class="container results-container">
       <button id="restart-btn" class="btn-ghost back-btn">← Start Over</button>
 
+      <!-- Slot Machine Reveal -->
+      <div id="slot-machine" class="card slot-machine-card">
+        <div class="slot-label">🎰 Revealing your persona...</div>
+        <div class="slot-reels">
+          <div class="slot-reel" id="reel-0"><span class="slot-symbol">🎲</span></div>
+          <div class="slot-reel" id="reel-1"><span class="slot-symbol">🎲</span></div>
+          <div class="slot-reel" id="reel-2"><span class="slot-symbol">🎲</span></div>
+        </div>
+      </div>
+
       <!-- Persona reveal -->
       <div id="persona-card" class="card persona-card">
         <div class="persona-emoji" id="persona-emoji">🛠️</div>
@@ -131,7 +141,16 @@
         <div id="resources-list" class="resources-list"></div>
       </div>
 
-      <button id="regenerate-btn" class="btn-secondary">🔄 Regenerate Roadmap</button>
+      <!-- Project Ideas -->
+      <div class="card projects-card">
+        <h3 class="section-title">🛠️ Project Ideas For You</h3>
+        <div id="projects-list" class="projects-list"></div>
+      </div>
+
+      <!-- Fun Tagline -->
+      <div class="tagline-card">
+        <p id="fun-tagline">🚀 Loading your vibe...</p>
+      </div>
     </div>
   </section>
 

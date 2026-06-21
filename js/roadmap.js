@@ -104,6 +104,7 @@ function generateRoadmapRuleBased({ branch, year, selectedSkills, targetRoleId }
   const persona = pickPersona(selectedSkills, dominantCategory);
   const skillGap = generateSkillGap(selectedSkills, targetRoleId);
   const resources = buildAdaptiveResources(skillGap, targetRoleId);
+  const projectIdeas = PROJECT_IDEAS[targetRoleId] || PROJECT_IDEAS.DEFAULT;
 
   const motivationalLines = [
     `${branch} + Year ${year}? Perfect timing to start building real momentum.`,
@@ -122,6 +123,7 @@ function generateRoadmapRuleBased({ branch, year, selectedSkills, targetRoleId }
     roadmapStages: stages,
     skillGap,
     resources,
+    projectIdeas,
     motivationalLine,
   };
 }

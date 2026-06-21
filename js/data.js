@@ -195,6 +195,49 @@ const NEXT_STEP_RESOURCES = {
   ],
 };
 
+// Project ideas per target role — concrete, buildable, resume-worthy.
+const PROJECT_IDEAS = {
+  "frontend": [
+    { icon: "🛒", title: "E-commerce Product Page Clone", desc: "Build a responsive product listing + cart UI with React. Great for showing component design skills." },
+    { icon: "📊", title: "Personal Finance Dashboard", desc: "A dashboard with charts (Chart.js/Recharts) showing mock spending data — shows data visualization skill." },
+    { icon: "🎨", title: "Component Library", desc: "Build 5-6 reusable UI components (buttons, modals, cards) with documentation — shows design system thinking." },
+  ],
+  "backend": [
+    { icon: "🔐", title: "Auth API with JWT", desc: "Build a REST API with signup/login/JWT auth and role-based access — a classic, resume-friendly backend project." },
+    { icon: "📦", title: "Inventory Management API", desc: "CRUD API with MongoDB for tracking stock, with proper validation and error handling." },
+    { icon: "💬", title: "Real-time Chat Backend", desc: "Use Socket.io to build a chat server — shows you can handle real-time data, not just REST." },
+  ],
+  "fullstack": [
+    { icon: "📝", title: "Task Manager with Auth", desc: "Full CRUD app with user accounts, built end-to-end (React + Node + MongoDB) — a strong, complete portfolio piece." },
+    { icon: "🛍️", title: "Mini E-commerce App", desc: "Product listing, cart, and checkout flow — shows you can handle a full user journey." },
+    { icon: "📅", title: "Booking/Scheduling App", desc: "Let users book slots/appointments — good showcase of both frontend UX and backend logic." },
+  ],
+  "aiml": [
+    { icon: "🌾", title: "Prediction Model with Real Data", desc: "Pick a public dataset (Kaggle) and build an end-to-end prediction pipeline with a simple deployed UI." },
+    { icon: "📝", title: "Text Classifier / Sentiment Analyzer", desc: "Build a simple NLP model that classifies text — sentiment, spam, or topic — and wrap it in a small API." },
+    { icon: "🖼️", title: "Image Classifier with TensorFlow", desc: "Train a basic image classifier (e.g. cats vs dogs) — classic but effective for showing ML fundamentals." },
+  ],
+  "data": [
+    { icon: "📊", title: "Sales/Trends Dashboard", desc: "Take a public dataset and build a clean dashboard (Power BI, Tableau, or Python) showing key insights." },
+    { icon: "🔍", title: "Exploratory Data Analysis Report", desc: "Pick an interesting dataset and write a thorough EDA notebook — shows analytical thinking clearly." },
+    { icon: "📈", title: "A/B Test Simulation", desc: "Simulate and analyze an A/B test using Python/SQL — a common real-world data analyst task." },
+  ],
+  "sde": [
+    { icon: "🧩", title: "Custom Data Structure Library", desc: "Implement and document your own versions of common data structures — shows deep fundamentals." },
+    { icon: "🎮", title: "Algorithm Visualizer", desc: "Build a small web app that visually animates sorting/searching algorithms — fun and technically solid." },
+    { icon: "🤖", title: "Competitive Programming Tracker", desc: "Track your own DSA practice progress across platforms — useful for you AND a good project." },
+  ],
+  "devops": [
+    { icon: "🐳", title: "Dockerize an Existing Project", desc: "Take one of your past projects and containerize it properly with Docker — practical, resume-ready." },
+    { icon: "⚙️", title: "CI/CD Pipeline Setup", desc: "Set up GitHub Actions to auto-test and deploy a project — shows real DevOps workflow knowledge." },
+    { icon: "📡", title: "Simple Monitoring Dashboard", desc: "Build a basic uptime/health-check dashboard for a deployed app — shows ops-minded thinking." },
+  ],
+  "DEFAULT": [
+    { icon: "🚀", title: "Full Stack Portfolio Project", desc: "Pick any idea you care about and build it end-to-end — that's the strongest single resume project you can have." },
+    { icon: "🧪", title: "Contribute to Open Source", desc: "Find a 'good first issue' on GitHub and make a real contribution — great experience and visibility." },
+  ],
+};
+
 // Resource links per category — each has a real URL so it's actually clickable
 const RESOURCES = {
   "Frontend": [
@@ -222,3 +265,47 @@ const RESOURCES = {
     { icon: "📘", text: "roadmap.sh — Explore all paths", url: "https://roadmap.sh/" },
   ],
 };
+
+// Fun, slightly cheeky taglines — picked based on target role + how many
+// skills the student already has. Purely for personality/humor, shown
+// as the closing line on the results screen.
+const FUN_TAGLINES = {
+  "frontend": {
+    high: ["You + CSS have a situationship, but it's mostly working out. 🎨", "Pixel-perfect by day, flexbox warrior by night. 💪"],
+    low: ["Right now your CSS and you are just 'talking.' Time to make it official. 💔➡️💕", "You've got the vibe, now go get the `div`s to cooperate."],
+  },
+  "backend": {
+    high: ["You speak fluent API. Frontend devs fear your error messages. 😤", "Your servers never sleep, and apparently neither do you."],
+    low: ["Right now your backend knowledge is 1 Express tutorial deep. Let's fix that. 🛠️", "You vs MongoDB: currently 0-1. Let's even the score."],
+  },
+  "fullstack": {
+    high: ["Jack of all trades, and surprisingly not bad at any of them. 🃏", "You can break things AND fix them — the full stack circle of life."],
+    low: ["Full stack dreams, half stack reality — for now. Let's close that gap. 🌗", "You want to do everything. Bold. Let's get you there one skill at a time."],
+  },
+  "aiml": {
+    high: ["Your model overfits less than your study schedule. 🧠📈", "You and gradient descent are basically best friends now."],
+    low: ["Right now ML feels like magic. Spoiler: it's just math wearing a cool jacket. ✨", "Your neural network has fewer layers than your skill list, for now."],
+  },
+  "data": {
+    high: ["You see a spreadsheet, you see a story. Most people just see numbers. 📊", "SQL queries flow from you like a poem. A slightly aggressive poem."],
+    low: ["Right now Excel still intimidates you a little. We'll fix that, promise. 📉➡️📈", "Your data skills are a rough draft — let's turn it into a bestseller."],
+  },
+  "sde": {
+    high: ["You debug faster than most people can explain the bug. 🐛💨", "DSA sheets fear you. Recursion still slightly confuses you. Relatable."],
+    low: ["Right now Big-O notation still looks like a typo to you. Let's change that. 🤓", "Your competitive programming rank: 'still loading.' Let's speed that up."],
+  },
+  "devops": {
+    high: ["You containerize your problems before they containerize you. 🐳", "'It works on my machine' isn't your excuse anymore — you actually fix it."],
+    low: ["Right now Docker still feels like a mysterious whale. Let's tame it. 🐋", "Your DevOps journey status: 'It's complicated.' Let's simplify it."],
+  },
+  "DEFAULT": {
+    high: ["You're basically built different. Keep going. 🚀", "Whatever you're doing, it's working. Don't stop now."],
+    low: ["Every expert was once exactly where you are. Onward! 🌱", "Day 1 energy is the best energy. Let's build on it."],
+  },
+};
+
+function pickFunTagline(targetRoleId, havePct) {
+  const set = FUN_TAGLINES[targetRoleId] || FUN_TAGLINES.DEFAULT;
+  const pool = havePct >= 50 ? set.high : set.low;
+  return pool[Math.floor(Math.random() * pool.length)];
+}

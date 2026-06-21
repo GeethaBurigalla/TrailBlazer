@@ -32,7 +32,6 @@ const scanText = document.getElementById("scan-text");
 const scanProgressFill = document.getElementById("scan-progress-fill");
 
 const restartBtn = document.getElementById("restart-btn");
-const regenerateBtn = document.getElementById("regenerate-btn");
 
 // ---------- FORM STATE SYNC ----------
 branchSelect.addEventListener("change", (e) => {
@@ -187,6 +186,48 @@ function runScanningAnimation(onComplete) {
   }, 550);
 }
 
+// ---------- SLOT MACHINE REVEAL ----------
+const SLOT_SYMBOLS = ["🎲", "🛠️", "🧠", "⚡", "🌐", "🎯", "🚀", "💡", "🔥", "⭐"];
+
+function runSlotMachine(finalEmoji) {
+  const reels = [
+    document.getElementById("reel-0"),
+    document.getElementById("reel-1"),
+    document.getElementById("reel-2"),
+  ];
+  const slotMachine = document.getElementById("slot-machine");
+  const personaCard = document.getElementById("persona-card");
+
+  // Start all reels spinning with rapidly changing random symbols
+  const spinIntervals = reels.map((reel) => {
+    reel.classList.add("spinning");
+    reel.classList.remove("locked");
+    return setInterval(() => {
+      const symbol = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+      reel.querySelector(".slot-symbol").textContent = symbol;
+    }, 80);
+  });
+
+  // Lock reels one by one, left to right. Last reel locks on the real persona emoji.
+  const lockTimes = [900, 1400, 1900];
+  reels.forEach((reel, i) => {
+    setTimeout(() => {
+      clearInterval(spinIntervals[i]);
+      reel.classList.remove("spinning");
+      reel.classList.add("locked");
+      reel.querySelector(".slot-symbol").textContent =
+        i === reels.length - 1 ? finalEmoji : SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
+    }, lockTimes[i]);
+  });
+
+  // After the last reel locks, fade out the slot machine and reveal the persona card
+  setTimeout(() => {
+    slotMachine.classList.add("hide");
+    personaCard.style.visibility = "visible";
+    personaCard.style.opacity = "1";
+  }, lockTimes[lockTimes.length - 1] + 500);
+}
+
 // ---------- FORM SUBMIT ----------
 careerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -195,19 +236,12 @@ careerForm.addEventListener("submit", async (e) => {
     const result = await generateRoadmap();
     renderResults(result);
     showScreen(screenResults);
+    runSlotMachine(result.persona.emoji);
   });
 });
 
 restartBtn.addEventListener("click", () => {
   showScreen(screenForm);
-});
-
-regenerateBtn.addEventListener("click", async () => {
-  runScanningAnimation(async () => {
-    const result = await generateRoadmap();
-    renderResults(result);
-    showScreen(screenResults);
-  });
 });
 
 // ---------- ROADMAP GENERATION (entry point) ----------
@@ -250,10 +284,21 @@ async function generateRoadmap() {
 // ---------- RESULTS RENDERING ----------
 function renderResults(result) {
   lastResult = result; // stored so the Copy My Result button can build its text
-  // Persona
+
+  // Hide persona card until the slot machine finishes; show the slot machine.
+  document.getElementById("persona-card").style.visibility = "hidden";
+  document.getElementById("persona-card").style.opacity = "0";
+  const slotMachine = document.getElementById("slot-machine");
+  slotMachine.classList.remove("hide");
+
+  // Persona (filled in now, revealed visually once slot machine locks in)
   document.getElementById("persona-emoji").textContent = result.persona.emoji;
   document.getElementById("persona-name").textContent = result.persona.name;
   document.getElementById("persona-desc").textContent = result.persona.desc;
+
+  // Fun tagline — picked based on target role + how much of the skill gap is covered
+  const taglineEl = document.getElementById("fun-tagline");
+  taglineEl.textContent = pickFunTagline(state.targetRole, result.skillGap.have);
 
   // Roadmap track
   const track = document.getElementById("roadmap-track");
@@ -343,6 +388,22 @@ function renderResults(result) {
     `;
     resEl.appendChild(a);
   });
+
+  // Project Ideas
+  const projectsEl = document.getElementById("projects-list");
+  projectsEl.innerHTML = "";
+  (result.projectIdeas || []).forEach((p) => {
+    const item = document.createElement("div");
+    item.className = "project-item";
+    item.innerHTML = `
+      <div class="project-icon">${p.icon}</div>
+      <div class="project-content">
+        <div class="project-title">${p.title}</div>
+        <div class="project-desc">${p.desc}</div>
+      </div>
+    `;
+    projectsEl.appendChild(item);
+  });
 }
 
 // ---------- COPY MY RESULT ----------
@@ -361,6 +422,11 @@ function buildShareText(result) {
   lines.push(`📊 Skill Gap for ${result.skillGap.roleLabel}: ${result.skillGap.have}% ready`);
   if (result.skillGap.haveSkills?.length) lines.push(`  ✅ Have: ${result.skillGap.haveSkills.join(", ")}`);
   if (result.skillGap.needSkills?.length) lines.push(`  🎯 Still need: ${result.skillGap.needSkills.join(", ")}`);
+  if (result.projectIdeas?.length) {
+    lines.push(``);
+    lines.push(`🛠️ Project Ideas:`);
+    result.projectIdeas.forEach((p) => lines.push(`  • ${p.title} — ${p.desc}`));
+  }
   lines.push(``);
   lines.push(`Generated with TrailBlazer 🚀`);
   return lines.join("\n");

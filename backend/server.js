@@ -104,6 +104,49 @@ const NEXT_STEP_RESOURCES = {
   ],
 };
 
+// Mirrors js/data.js PROJECT_IDEAS — concrete, buildable, resume-worthy project ideas per role.
+const PROJECT_IDEAS = {
+  "frontend": [
+    { icon: "🛒", title: "E-commerce Product Page Clone", desc: "Build a responsive product listing + cart UI with React." },
+    { icon: "📊", title: "Personal Finance Dashboard", desc: "A dashboard with charts showing mock spending data." },
+    { icon: "🎨", title: "Component Library", desc: "Build 5-6 reusable UI components with documentation." },
+  ],
+  "backend": [
+    { icon: "🔐", title: "Auth API with JWT", desc: "Build a REST API with signup/login/JWT auth and role-based access." },
+    { icon: "📦", title: "Inventory Management API", desc: "CRUD API with MongoDB for tracking stock, with validation." },
+    { icon: "💬", title: "Real-time Chat Backend", desc: "Use Socket.io to build a chat server with real-time data." },
+  ],
+  "fullstack": [
+    { icon: "📝", title: "Task Manager with Auth", desc: "Full CRUD app with user accounts, built end-to-end." },
+    { icon: "🛍️", title: "Mini E-commerce App", desc: "Product listing, cart, and checkout flow." },
+    { icon: "📅", title: "Booking/Scheduling App", desc: "Let users book slots/appointments — frontend + backend." },
+  ],
+  "aiml": [
+    { icon: "🌾", title: "Prediction Model with Real Data", desc: "Pick a public dataset and build an end-to-end prediction pipeline." },
+    { icon: "📝", title: "Text Classifier / Sentiment Analyzer", desc: "Build an NLP model wrapped in a small API." },
+    { icon: "🖼️", title: "Image Classifier with TensorFlow", desc: "Train a basic image classifier — shows ML fundamentals." },
+  ],
+  "data": [
+    { icon: "📊", title: "Sales/Trends Dashboard", desc: "Build a clean dashboard showing key insights from a dataset." },
+    { icon: "🔍", title: "Exploratory Data Analysis Report", desc: "Pick a dataset and write a thorough EDA notebook." },
+    { icon: "📈", title: "A/B Test Simulation", desc: "Simulate and analyze an A/B test using Python/SQL." },
+  ],
+  "sde": [
+    { icon: "🧩", title: "Custom Data Structure Library", desc: "Implement and document your own common data structures." },
+    { icon: "🎮", title: "Algorithm Visualizer", desc: "Build a web app that visually animates sorting/searching." },
+    { icon: "🤖", title: "Competitive Programming Tracker", desc: "Track your DSA practice progress across platforms." },
+  ],
+  "devops": [
+    { icon: "🐳", title: "Dockerize an Existing Project", desc: "Take a past project and containerize it with Docker." },
+    { icon: "⚙️", title: "CI/CD Pipeline Setup", desc: "Set up GitHub Actions to auto-test and deploy a project." },
+    { icon: "📡", title: "Simple Monitoring Dashboard", desc: "Build a basic uptime/health-check dashboard for a deployed app." },
+  ],
+  "DEFAULT": [
+    { icon: "🚀", title: "Full Stack Portfolio Project", desc: "Pick any idea you care about and build it end-to-end." },
+    { icon: "🧪", title: "Contribute to Open Source", desc: "Find a 'good first issue' on GitHub and make a real contribution." },
+  ],
+};
+
 /**
  * Builds resources that respond to the actual skill gap:
  * missing skills -> resources for those specific skills.
@@ -211,6 +254,7 @@ function buildFallbackRoadmap({ branch, year, selectedSkills, targetRole }) {
   const t = templates[dominant] || templates.DEFAULT;
   const skillGap = computeSkillGap(selectedSkills, targetRole);
   const resources = buildAdaptiveResources(skillGap, targetRole);
+  const projectIdeas = PROJECT_IDEAS[targetRole] || PROJECT_IDEAS.DEFAULT;
 
   return {
     source: "rule-based-fallback",
@@ -218,6 +262,7 @@ function buildFallbackRoadmap({ branch, year, selectedSkills, targetRole }) {
     roadmapStages: t.stages,
     skillGap,
     resources,
+    projectIdeas,
     motivationalLine: `${branch || "Your branch"}, Year ${year || "?"} — solid time to start building momentum.`,
   };
 }
@@ -284,6 +329,7 @@ Do NOT invent your own skill gap numbers — that part is already computed separ
   // Attach the REAL computed skill gap (don't trust the LLM with these numbers)
   parsed.skillGap = skillGap;
   parsed.resources = buildAdaptiveResources(skillGap, targetRole);
+  parsed.projectIdeas = PROJECT_IDEAS[targetRole] || PROJECT_IDEAS.DEFAULT;
   parsed.source = "llm";
   return parsed;
 }
