@@ -323,15 +323,18 @@ function renderResults(result) {
 
   // Skill gap
   const gapEl = document.getElementById("skillgap-bars");
+  const isFullyCovered = result.skillGap.have >= 100;
+
   gapEl.innerHTML = `
     <div class="skillgap-row">
       <div class="skillgap-label"><span class="skill-name">What You Have</span><span class="skill-pct">${result.skillGap.have}%</span></div>
       <div class="skillgap-track"><div class="skillgap-fill have" style="width:0%" data-target="${result.skillGap.have}"></div></div>
     </div>
+    ${isFullyCovered ? "" : `
     <div class="skillgap-row">
-      <div class="skillgap-label"><span class="skill-name">Needed for ${result.skillGap.roleLabel}</span><span class="skill-pct">${result.skillGap.need}%</span></div>
+      <div class="skillgap-label"><span class="skill-name">Target for ${result.skillGap.roleLabel}</span><span class="skill-pct">${result.skillGap.need}%</span></div>
       <div class="skillgap-track"><div class="skillgap-fill need" style="width:0%" data-target="${result.skillGap.need}"></div></div>
-    </div>
+    </div>`}
   `;
   // Animate bars after a tick
   setTimeout(() => {
