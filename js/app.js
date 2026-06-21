@@ -1,20 +1,17 @@
 // ============================================================
-// app.js — main application logic: form, autosuggest UI,
-// screen transitions, scanning animation, and results rendering
+// app.js — main application logic
 // ============================================================
 
-// ---------- STATE ----------
 const state = {
   branch: "",
   year: "",
   targetRole: "",
   selectedSkills: [],
-  engine: "custom", // "custom" | "bootcamp"
+  engine: "custom",
 };
 
-let lastResult = null; // holds the most recently rendered roadmap result
+let lastResult = null;
 
-// ---------- DOM REFS ----------
 const branchSelect = document.getElementById("branch");
 const yearSelect = document.getElementById("year");
 const targetRoleSelect = document.getElementById("target-role");
@@ -30,87 +27,54 @@ const screenScanning = document.getElementById("screen-scanning");
 const screenResults = document.getElementById("screen-results");
 const scanText = document.getElementById("scan-text");
 const scanProgressFill = document.getElementById("scan-progress-fill");
-
 const restartBtn = document.getElementById("restart-btn");
 
-// ---------- FORM STATE SYNC ----------
-branchSelect.addEventListener("change", (e) => {
-  state.branch = e.target.value;
-  validateForm();
-});
-yearSelect.addEventListener("change", (e) => {
-  state.year = e.target.value;
-  validateForm();
-});
-targetRoleSelect.addEventListener("change", (e) => {
-  state.targetRole = e.target.value;
-  validateForm();
-});
+branchSelect.addEventListener("change", (e) => { state.branch = e.target.value; validateForm(); });
+yearSelect.addEventListener("change", (e) => { state.year = e.target.value; validateForm(); });
+targetRoleSelect.addEventListener("change", (e) => { state.targetRole = e.target.value; validateForm(); });
 
 function validateForm() {
   const valid = state.branch && state.year && state.targetRole && state.selectedSkills.length > 0;
   submitBtn.disabled = !valid;
 }
 
-// ---------- AUTOSUGGEST ----------
-// Runs silently: the custom engine answers instantly for the UI,
-// while the bootcamp API is also called in the background for
-// comparison/logging — both engines genuinely run, just without
-// a visible toggle cluttering the form.
 let debounceTimer = null;
-
 skillsInput.addEventListener("input", () => {
   clearTimeout(debounceTimer);
   const query = skillsInput.value;
-
   if (query.trim().length === 0) {
     suggestionsList.classList.remove("show");
     suggestionsList.innerHTML = "";
     return;
   }
-
-  // Custom engine drives the UI instantly (no network wait).
   const customResults = customAutosuggest(query);
   renderSuggestions(customResults);
-
-  // Bootcamp API runs in the background for comparison — logged to
-  // console, not shown in UI, so both engines genuinely get used.
-  clearTimeout(debounceTimer);
   debounceTimer = setTimeout(async () => {
     const bootcampResults = await bootcampAutosuggest(query);
-    console.log(
-      `[Autosuggest comparison] "${query}" → custom: ${customResults.length} results, bootcamp API: ${bootcampResults.length} results`,
-      { custom: customResults, bootcamp: bootcampResults }
-    );
+    console.log(`[Autosuggest comparison] "${query}" → custom: ${customResults.length}, bootcamp: ${bootcampResults.length}`, { custom: customResults, bootcamp: bootcampResults });
   }, 150);
 });
 
 function renderSuggestions(results) {
   suggestionsList.innerHTML = "";
-
   if (results.length === 0) {
     suggestionsList.innerHTML = `<li class="empty">No matches found</li>`;
     suggestionsList.classList.add("show");
     return;
   }
-
   for (const item of results) {
-    // Skip ones already selected
     if (state.selectedSkills.includes(item.name)) continue;
-
     const li = document.createElement("li");
     li.innerHTML = `<span>${item.name}</span><span class="tag">${item.category}</span>`;
     li.addEventListener("click", () => selectSkill(item.name));
     suggestionsList.appendChild(li);
   }
-
   suggestionsList.classList.add("show");
 }
 
 function selectSkill(name) {
   if (state.selectedSkills.length >= 8) return;
   if (state.selectedSkills.includes(name)) return;
-
   state.selectedSkills.push(name);
   renderChips();
   skillsInput.value = "";
@@ -137,14 +101,12 @@ function renderChips() {
   chipCount.textContent = state.selectedSkills.length;
 }
 
-// Close suggestions when clicking outside
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".autosuggest-wrap")) {
     suggestionsList.classList.remove("show");
   }
 });
 
-// Allow Enter key to pick the first suggestion
 skillsInput.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
@@ -153,13 +115,11 @@ skillsInput.addEventListener("keydown", (e) => {
   }
 });
 
-// ---------- SCREEN TRANSITIONS ----------
 function showScreen(screenEl) {
   [screenForm, screenScanning, screenResults].forEach((s) => s.classList.remove("active"));
   screenEl.classList.add("active");
 }
 
-// ---------- SCANNING ANIMATION ----------
 const scanMessages = [
   "Analyzing your profile...",
   "Matching career paths...",
@@ -170,15 +130,12 @@ const scanMessages = [
 function runScanningAnimation(onComplete) {
   showScreen(screenScanning);
   scanProgressFill.style.width = "0%";
-
   let step = 0;
   const totalSteps = scanMessages.length;
-
   const interval = setInterval(() => {
     scanText.textContent = scanMessages[step];
     scanProgressFill.style.width = `${((step + 1) / totalSteps) * 100}%`;
     step++;
-
     if (step >= totalSteps) {
       clearInterval(interval);
       setTimeout(onComplete, 400);
@@ -186,7 +143,6 @@ function runScanningAnimation(onComplete) {
   }, 550);
 }
 
-// ---------- SLOT MACHINE REVEAL ----------
 const SLOT_SYMBOLS = ["🎲", "🛠️", "🧠", "⚡", "🌐", "🎯", "🚀", "💡", "🔥", "⭐"];
 
 function runSlotMachine(finalEmoji) {
@@ -198,7 +154,6 @@ function runSlotMachine(finalEmoji) {
   const slotMachine = document.getElementById("slot-machine");
   const personaCard = document.getElementById("persona-card");
 
-  // Start all reels spinning with rapidly changing random symbols
   const spinIntervals = reels.map((reel) => {
     reel.classList.add("spinning");
     reel.classList.remove("locked");
@@ -208,7 +163,6 @@ function runSlotMachine(finalEmoji) {
     }, 80);
   });
 
-  // Lock reels one by one, left to right. Last reel locks on the real persona emoji.
   const lockTimes = [900, 1400, 1900];
   reels.forEach((reel, i) => {
     setTimeout(() => {
@@ -220,7 +174,6 @@ function runSlotMachine(finalEmoji) {
     }, lockTimes[i]);
   });
 
-  // After the last reel locks, fade out the slot machine and reveal the persona card
   setTimeout(() => {
     slotMachine.classList.add("hide");
     personaCard.style.visibility = "visible";
@@ -228,10 +181,8 @@ function runSlotMachine(finalEmoji) {
   }, lockTimes[lockTimes.length - 1] + 500);
 }
 
-// ---------- FORM SUBMIT ----------
 careerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-
   runScanningAnimation(async () => {
     const result = await generateRoadmap();
     renderResults(result);
@@ -244,10 +195,6 @@ restartBtn.addEventListener("click", () => {
   showScreen(screenForm);
 });
 
-// ---------- ROADMAP GENERATION (entry point) ----------
-// Tries the backend (LLM-powered, with its own server-side fallback).
-// If the backend itself is unreachable (server down, network issue),
-// falls back to the local rule-based generator so the UI never breaks.
 async function generateRoadmap() {
   try {
     const res = await fetch("/api/generate-roadmap", {
@@ -260,18 +207,12 @@ async function generateRoadmap() {
         selectedSkills: state.selectedSkills,
       }),
     });
-
     if (!res.ok) throw new Error(`Server responded ${res.status}`);
-
     const data = await res.json();
-    // Basic shape validation — if the response is malformed for any reason,
-    // treat it as a failure and fall back locally rather than rendering broken UI.
-    if (!data.persona || !Array.isArray(data.roadmapStages)) {
-      throw new Error("Malformed roadmap response");
-    }
+    if (!data.persona || !Array.isArray(data.roadmapStages)) throw new Error("Malformed roadmap response");
     return data;
   } catch (err) {
-    console.warn("Backend roadmap generation unavailable, using local fallback:", err.message);
+    console.warn("Backend unavailable, using local fallback:", err.message);
     return generateRoadmapRuleBased({
       branch: state.branch,
       year: state.year,
@@ -281,22 +222,18 @@ async function generateRoadmap() {
   }
 }
 
-// ---------- RESULTS RENDERING ----------
 function renderResults(result) {
-  lastResult = result; // stored so the Copy My Result button can build its text
+  lastResult = result;
 
-  // Hide persona card until the slot machine finishes; show the slot machine.
   document.getElementById("persona-card").style.visibility = "hidden";
   document.getElementById("persona-card").style.opacity = "0";
   const slotMachine = document.getElementById("slot-machine");
   slotMachine.classList.remove("hide");
 
-  // Persona (filled in now, revealed visually once slot machine locks in)
   document.getElementById("persona-emoji").textContent = result.persona.emoji;
   document.getElementById("persona-name").textContent = result.persona.name;
   document.getElementById("persona-desc").textContent = result.persona.desc;
 
-  // Fun tagline — picked based on target role + how much of the skill gap is covered
   const taglineEl = document.getElementById("fun-tagline");
   taglineEl.textContent = pickFunTagline(state.targetRole, result.skillGap.have);
 
@@ -321,10 +258,9 @@ function renderResults(result) {
     track.appendChild(el);
   });
 
-  // Skill gap
+  // Skill gap bars
   const gapEl = document.getElementById("skillgap-bars");
   const isFullyCovered = result.skillGap.have >= 100;
-
   gapEl.innerHTML = `
     <div class="skillgap-row">
       <div class="skillgap-label"><span class="skill-name">What You Have</span><span class="skill-pct">${result.skillGap.have}%</span></div>
@@ -336,18 +272,16 @@ function renderResults(result) {
       <div class="skillgap-track"><div class="skillgap-fill need" style="width:0%" data-target="${result.skillGap.need}"></div></div>
     </div>`}
   `;
-  // Animate bars after a tick
   setTimeout(() => {
     gapEl.querySelectorAll(".skillgap-fill").forEach((bar) => {
       bar.style.width = bar.dataset.target + "%";
     });
   }, 100);
 
-  // Named skill chips (have vs still-need) — only render if data provides them
+  // Named skill chips
   const detailEl = document.getElementById("skillgap-detail");
   const haveSkills = result.skillGap.haveSkills || [];
   const needSkills = result.skillGap.needSkills || [];
-
   if (haveSkills.length === 0 && needSkills.length === 0) {
     detailEl.innerHTML = "";
   } else {
@@ -355,21 +289,17 @@ function renderResults(result) {
       ${haveSkills.length > 0 ? `
         <div class="skillgap-detail-row">
           <div class="skillgap-detail-label">✅ You already have</div>
-          <div class="skill-chips-mini">
-            ${haveSkills.map((s) => `<span class="skill-chip-mini have">${s}</span>`).join("")}
-          </div>
+          <div class="skill-chips-mini">${haveSkills.map((s) => `<span class="skill-chip-mini have">${s}</span>`).join("")}</div>
         </div>` : ""}
       ${needSkills.length > 0 ? `
         <div class="skillgap-detail-row">
           <div class="skillgap-detail-label">🎯 Still need</div>
-          <div class="skill-chips-mini">
-            ${needSkills.map((s) => `<span class="skill-chip-mini need">${s}</span>`).join("")}
-          </div>
+          <div class="skill-chips-mini">${needSkills.map((s) => `<span class="skill-chip-mini need">${s}</span>`).join("")}</div>
         </div>` : ""}
     `;
   }
 
-  // Resources — title adapts based on whether there's still a gap to close
+  // Resources title
   const resourcesTitle = document.getElementById("resources-title");
   const hasGapRemaining = (result.skillGap.needSkills || []).length > 0;
   resourcesTitle.textContent = hasGapRemaining
@@ -392,7 +322,7 @@ function renderResults(result) {
     resEl.appendChild(a);
   });
 
-  // Project Ideas
+  // Project ideas
   const projectsEl = document.getElementById("projects-list");
   projectsEl.innerHTML = "";
   (result.projectIdeas || []).forEach((p) => {
@@ -407,6 +337,135 @@ function renderResults(result) {
     `;
     projectsEl.appendChild(item);
   });
+
+  // Study plan section — render the hours picker, plan generates on click
+  renderStudyPlanPicker(result);
+}
+
+// ---------- STUDY PLAN ----------
+const HOUR_LINES = {
+  1: "1 hour a day. Slow and steady wins the race. Probably. 🐢",
+  2: "2 hours? Now we're talking. Netflix can wait. 😤",
+  3: "3 hours a day?! Bro are you okay? Drink water. 💀",
+};
+
+const BREAK_LABELS = [
+  { icon: "🍕", label: "BREAK WEEK", desc: "Touch grass. Eat biryani. Sleep 9 hours. You earned it." },
+  { icon: "🧃", label: "CHILL WEEK", desc: "Review what you built. Fix small bugs. No new stuff." },
+  { icon: "🍔", label: "SNACK BREAK", desc: "Watch a tech talk. Scroll GitHub. Eat something nice." },
+  { icon: "😴", label: "REST WEEK", desc: "Your brain is a muscle. Even muscles need rest, bro." },
+];
+
+function buildStudyPlan(result, hoursPerDay) {
+  const stages = result.roadmapStages;
+  const needSkills = result.skillGap.needSkills || [];
+
+  // Weeks per stage based on hours/day
+  // 1hr = 3 weeks/stage, 2hr = 2 weeks/stage, 3hr = 1.5 weeks/stage
+  const weeksPerStage = hoursPerDay === 1 ? 3 : hoursPerDay === 2 ? 2 : 1;
+  const breakEvery = hoursPerDay === 3 ? 2 : 3; // more breaks for 3hr grinders
+
+  const rows = [];
+  let weekNum = 1;
+  let breakIndex = 0;
+
+  stages.forEach((stage, i) => {
+    const endWeek = weekNum + weeksPerStage - 1;
+    const skill = needSkills[i] || stage.title;
+    rows.push({
+      type: "study",
+      week: weeksPerStage === 1 ? `Week ${weekNum}` : `Week ${weekNum}-${endWeek}`,
+      focus: stage.title,
+      task: `${hoursPerDay} hr${hoursPerDay > 1 ? "s" : ""}/day — ${stage.desc}`,
+      vibe: ["🔥 Let's gooo", "💪 First blood", "😤 Backend era", "🚀 Almost there"][i] || "✅ Keep going",
+    });
+    weekNum = endWeek + 1;
+
+    // Insert a break after every N stages (not after the last one)
+    if ((i + 1) % breakEvery === 0 && i < stages.length - 1) {
+      const brk = BREAK_LABELS[breakIndex % BREAK_LABELS.length];
+      rows.push({
+        type: "break",
+        week: `Week ${weekNum}`,
+        focus: `${brk.icon} ${brk.label}`,
+        task: brk.desc,
+        vibe: "😌 Breathe",
+      });
+      weekNum++;
+      breakIndex++;
+    }
+  });
+
+  // Final ship-it week
+  rows.push({
+    type: "ship",
+    week: `Week ${weekNum}`,
+    focus: "🏆 SHIP IT WEEK",
+    task: "Deploy your project. Write README. Update LinkedIn. Tell your mom. 🎉",
+    vibe: "🎊 You did it!!",
+  });
+
+  return rows;
+}
+
+function renderStudyPlanPicker(result) {
+  const container = document.getElementById("study-plan-section");
+  if (!container) return;
+
+  container.innerHTML = `
+    <div class="study-plan-card">
+      <h3 class="study-plan-title">📅 Build My Study Plan</h3>
+      <p class="study-plan-subtitle">How many hours can you study per day?</p>
+      <div class="hours-picker">
+        <button class="hours-btn" data-hours="1">1 hr</button>
+        <button class="hours-btn" data-hours="2">2 hrs</button>
+        <button class="hours-btn" data-hours="3">3 hrs</button>
+      </div>
+      <div id="study-plan-output"></div>
+    </div>
+  `;
+
+  container.querySelectorAll(".hours-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      container.querySelectorAll(".hours-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const hours = parseInt(btn.dataset.hours);
+      renderStudyPlanTable(result, hours);
+    });
+  });
+}
+
+function renderStudyPlanTable(result, hours) {
+  const output = document.getElementById("study-plan-output");
+  const rows = buildStudyPlan(result, hours);
+  const totalWeeks = rows[rows.length - 1].week.replace("Week ", "").split("-")[0];
+
+  output.innerHTML = `
+    <p class="hours-quip">${HOUR_LINES[hours]}</p>
+    <div class="study-table-wrap">
+      <table class="study-table">
+        <thead>
+          <tr>
+            <th>📆 Week</th>
+            <th>🎯 Focus</th>
+            <th>📝 Daily Task</th>
+            <th>✨ Vibe</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((r) => `
+            <tr class="study-row ${r.type === "break" ? "break-row" : r.type === "ship" ? "ship-row" : ""}">
+              <td class="week-cell">${r.week}</td>
+              <td class="focus-cell">${r.focus}</td>
+              <td class="task-cell">${r.task}</td>
+              <td class="vibe-cell">${r.vibe}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    <p class="plan-footer">~${totalWeeks} weeks total. Some biryani. One deployed project. That's the deal. 🤝</p>
+  `;
 }
 
 // ---------- COPY MY RESULT ----------
@@ -438,13 +497,10 @@ function buildShareText(result) {
 const copyResultsBtn = document.getElementById("copy-results-btn");
 copyResultsBtn.addEventListener("click", async () => {
   if (!lastResult) return;
-
   const text = buildShareText(lastResult);
-
   try {
     await navigator.clipboard.writeText(text);
   } catch (err) {
-    // Fallback for browsers/contexts where clipboard API is blocked
     const textarea = document.createElement("textarea");
     textarea.value = text;
     textarea.style.position = "fixed";
@@ -454,7 +510,6 @@ copyResultsBtn.addEventListener("click", async () => {
     document.execCommand("copy");
     document.body.removeChild(textarea);
   }
-
   copyResultsBtn.textContent = "✅ Copied!";
   copyResultsBtn.classList.add("copied");
   setTimeout(() => {

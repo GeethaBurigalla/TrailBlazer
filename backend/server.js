@@ -356,7 +356,6 @@ app.post("/api/generate-roadmap", async (req, res) => {
     return res.json(buildFallbackRoadmap({ branch, year, selectedSkills, targetRole }));
   }
 });
-
 app.listen(port, () => {
   console.log(`TrailBlazer server running on http://localhost:${port}`);
   console.log(GROQ_API_KEY ? "Groq API key detected." : "WARNING: No Groq API key found — fallback mode only.");
