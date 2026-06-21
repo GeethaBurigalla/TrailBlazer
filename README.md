@@ -8,7 +8,7 @@
 
 ## 🚀 Live Demo
 
-👉 **[Add your Render URL here]**
+👉 https://trailblazer-xo24.onrender.com/
 
 ---
 
