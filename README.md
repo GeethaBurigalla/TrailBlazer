@@ -2,7 +2,7 @@
 
 > An AI-powered career roadmap generator for engineering students. Enter your branch, year, interests, and target role — get a personalized visual roadmap, skill gap analysis, project ideas, and a custom study plan. Built for the Creative Showcase Hackathon 2026.
 
-![TrailBlazer](logo.png)
+<img src="logo.png" alt="TrailBlazer" width="300"/>
 
 ---
 
